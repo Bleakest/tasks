@@ -1,74 +1,86 @@
-import { useState } from "react";
 import styles from "./app.module.css";
+import data from "../data.json";
+import { useState } from "react";
 
-function App() {
-  const [value, setValue] = useState("");
-  const [list, setList] = useState([]);
-  const [error, setError] = useState("");
-  const isValueValid = value.length >= 3 ? true : false;
+export const App = () => {
+  const [steps, setSteps] = useState(data);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  function onInputButtonClick() {
-    const promptValue = prompt();
-    if (promptValue.length < 3) {
-      setError("Строка содержит менее 3 символов");
-    } else if (promptValue.length >= 3) {
-      setValue(promptValue);
-      setError("");
-    }
+  const isFirstStep = activeIndex ? false : true;
+  const isLastStep = activeIndex == 6 ? true : false;
+
+  function handleNext(event) {
+    setActiveIndex(activeIndex + 1);
   }
-
-  function onAddButtonClick() {
-    if (isValueValid) {
-      setList((prev) => {
-        return [...prev, { id: Date.now(), value }];
-      });
-      setValue("");
-      setError("");
-    }
+  function handlePrev(event) {
+    setActiveIndex(activeIndex - 1);
   }
-
+  function handleBegin() {
+    setActiveIndex(0);
+  }
   return (
-    <div className={styles.app}>
-      <h1 className={styles["page-heading"]}>Ввод значения</h1>
-      <p className={styles["no-margin-text"]}>
-        Текущее значение <code>value</code>: "
-        <output className={styles["current-value"]}>{value}</output>"
-      </p>
-      {error !== "" ? <div className={styles["error"]}>{error}</div> : null}
-      <div className={styles["buttons-container"]}>
-        <button
-          className={styles["button"]}
-          onClick={() => onInputButtonClick()}
-        >
-          Ввести новое
-        </button>
-        <button
-          className={styles["button"]}
-          onClick={() => onAddButtonClick()}
-          disabled={!isValueValid}
-        >
-          Добавить в список
-        </button>
-      </div>
-      <div className={styles["list-container"]}>
-        <h2 className={styles["list-heading"]}>Список:</h2>
-
-        <ul className={styles["list"]}>
-          {list.length ? (
-            list.map((i) => (
-              <li key={i.id} className={styles["list-item"]}>
-                {i.value}
-              </li>
-            ))
-          ) : (
-            <p className={styles["no-margin-text"]}>
-              Нет добавленных элементов
-            </p>
-          )}
-        </ul>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h1>Инструкция по готовке пельменей</h1>
+        <div className={styles.steps}>
+          <div className={styles["steps-content"]}>
+            {steps[activeIndex].content}
+          </div>
+          <ul className={styles["steps-list"]}>
+            {steps.map((step) => {
+              return (
+                <li
+                  key={step.id}
+                  className={
+                    activeIndex + 1 == step.id.slice(2)
+                      ? styles["steps-item"] + " " + styles.active
+                      : styles["steps-item"] &&
+                        activeIndex + 1 > step.id.slice(2)
+                      ? styles["steps-item"] + " " + styles.done
+                      : styles["steps-item"]
+                  }
+                >
+                  <button
+                    onClick={(event) =>
+                      setActiveIndex(Number(event.target.textContent) - 1)
+                    }
+                    className={styles["steps-item-button"]}
+                  >
+                    {step.id.slice(2)}
+                  </button>
+                  <p>{step.title}</p>
+                </li>
+              );
+            })}
+          </ul>
+          <div className={styles["buttons-container"]}>
+            <button
+              onClick={(event) => handlePrev(event)}
+              className={styles.button}
+              disabled={isFirstStep}
+            >
+              Назад
+            </button>
+            {isLastStep ? (
+              <button
+                onClick={(event) => handleBegin()}
+                className={styles.button}
+              >
+                Начать сначала
+              </button>
+            ) : (
+              <button
+                onClick={(event) => handleNext(event)}
+                className={styles.button}
+              >
+                Далее
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default App;
