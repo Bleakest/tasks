@@ -1,71 +1,96 @@
 import styles from "./app.module.css";
-import data from "../data.json";
 import { useState } from "react";
 
+const NUMS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 export const App = () => {
-  const [steps, setSteps] = useState(data);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [operand1, setOperand1] = useState("");
+  const [operator, setOperator] = useState("");
+  const [operand2, setOperand2] = useState("");
+  const [total, setTotal] = useState("");
+  const totalEL = document.querySelector(".total");
 
-  const isFirstStep = activeIndex === 0;
-  const isLastStep = activeIndex === data.length - 1;
+  function handleClear() {
+    setOperand1("");
+    setOperand2("");
+    setOperator("");
+    setTotal("");
+  }
 
-  function handleNext() {
-    setActiveIndex(activeIndex + 1);
+  function handlePlus() {
+    if (total) {
+      setOperand1(total);
+      setTotal("");
+      setOperator("+");
+    } else {
+      setOperator("+");
+    }
   }
-  function handlePrev() {
-    setActiveIndex(activeIndex - 1);
+
+  function handleMinus() {
+    if (total) {
+      setOperand1(total);
+      setTotal("");
+      setOperator("-");
+    } else {
+      setOperator("-");
+    }
   }
-  function handleBegin() {
-    setActiveIndex(0);
+
+  function handleEqual() {
+    totalEL.style.color = "red";
+    if (operator == "+") {
+      setTotal(Number(operand1) + Number(operand2));
+    } else if (operator == "-") {
+      setTotal(Number(operand1) - Number(operand2));
+    }
+
+    setOperand1("");
+    setOperand2("");
+    setOperator("");
+  }
+
+  function handeNum(item) {
+    if (total) {
+      setOperand1(total + item);
+      setTotal("");
+      setOperator("");
+    } else if (!operator) {
+      setOperand1(operand1 + item);
+    } else {
+      setOperand2(operand2 + item);
+    }
   }
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <h1>Инструкция по готовке пельменей</h1>
-        <div className={styles.steps}>
-          <div className={styles["steps-content"]}>
-            {steps[activeIndex].content}
-          </div>
-          <ul className={styles["steps-list"]}>
-            {steps.map((step, index) => {
-              return (
-                <li
-                  key={step.id}
-                  className={
-                    styles["steps-item"] +
-                    " " +
-                    (activeIndex === index && styles.active) +
-                    " " +
-                    (activeIndex > index && styles.done)
-                  }
-                >
-                  <button
-                    onClick={() => setActiveIndex(index)}
-                    className={styles["steps-item-button"]}
-                  >
-                    {index + 1}
-                  </button>
-                  <p>{step.title}</p>
-                </li>
-              );
-            })}
-          </ul>
-          <div className={styles["buttons-container"]}>
-            <button
-              onClick={() => handlePrev()}
-              className={styles.button}
-              disabled={isFirstStep}
-            >
-              Назад
-            </button>
-            <button
-              onClick={isLastStep ? handleBegin : handleNext}
-              className={styles.button}
-            >
-              {isLastStep ? "Начать сначала" : "Далее"}
-            </button>
-          </div>
-        </div>
+      <div className={styles["counter"]}>
+        {operand1 + " " + operator + " " + operand2}
+        <div className="total">{total}</div>
+      </div>
+      <button onClick={() => handleClear()} className={styles["clear"]}>
+        C
+      </button>
+      <ul className={styles["list"]}>
+        {NUMS.map((item) => (
+          <button
+            onClick={() => handeNum(item)}
+            className={styles["num"]}
+            key={item}
+          >
+            {item}
+          </button>
+        ))}
+      </ul>
+      <div className={styles["btnBar"]}>
+        <button onClick={() => handlePlus()} className={styles["btn"]}>
+          +
+        </button>
+        <button onClick={() => handleMinus()} className={styles["btn"]}>
+          -
+        </button>
+      </div>
+      <div onClick={() => handleEqual()} className={styles["equal"]}>
+        =
       </div>
     </div>
   );
