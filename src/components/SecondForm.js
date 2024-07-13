@@ -1,24 +1,29 @@
-import styles from "./SecondForm.module.css";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-
-const fieldsScheme = yup.object().shape({
-  login: yup
-    .string()
-    .matches(
-      !/^[\w_]*$/,
-      "Должны использоваться буквы, цифры и нижнее подчеркивание"
-    )
-    .max(20, "Должно быть меньше 20 символов")
-    .min(3, "Должно быть больше трех символов"),
-  password: yup.string().min(5, "Должно быть больше 5 символов"),
-  repeatPass: yup.string().matches(),
-});
+import styles from "./SecondForm.module.css";
 
 const sendFormData = (formData) => {
   console.log(formData);
 };
+
+const fieldsSchema = yup.object().shape({
+  login: yup
+    .string()
+    .matches(
+      /^[a-zA-Z][a-zA-Z0-9]{0,20}$/,
+      "Неверный логин. Допустимые символы: буквы, цифры и нижнее подчёркивание"
+    ),
+  password: yup
+    .string()
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]).{6,}/,
+      "Пароль небезопасный. Попробуйте ввести другой"
+    ),
+  repeatPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Пароли не совпадают"),
+});
 
 export default function SecondForm() {
   const {
@@ -28,40 +33,49 @@ export default function SecondForm() {
   } = useForm({
     defaultValues: {
       login: "",
+      password: "",
+      repeatPassword: "",
     },
-    resolver: yupResolver(fieldsScheme),
+    resolver: yupResolver(fieldsSchema),
   });
 
   const loginError = errors.login?.message;
+  const passwordError = errors.password?.message;
+  const passwordRepeatError = errors.repeatPassword?.message;
+
   return (
-    <form onSubmit={handleSubmit(sendFormData)} className={styles["form"]}>
-      <h2 className={styles["title"]}>SecondForm</h2>
-
-      <div className={styles["error"]}>{errors.login?.message}</div>
-
-      <div>
-        <input type="text" placeholder="Введите email" {...register("login")} />
-        <input
-          type="password"
-          required
-          placeholder="Введите password"
-          {...register("password")}
-        />
-        <input
-          type="password"
-          placeholder="Повторите пароль"
-          {...register("repeatPass")}
-        />
-      </div>
-
-      <button
-        type="submit"
-        value="Зарегистрироваться"
-        className={styles["button"]}
-        disabled={loginError !== null}
-      >
-        Зарегистрироваться
-      </button>
-    </form>
+    <div className={styles.form}>
+      <form onSubmit={handleSubmit(sendFormData)}>
+        <h2 className={styles.title}>SecondForm</h2>
+        {loginError && <div className={styles.error}>{loginError}</div>}
+        {passwordError && <div className={styles.error}>{passwordError}</div>}
+        {passwordRepeatError && (
+          <div className={styles.error}>{passwordRepeatError}</div>
+        )}
+        <div>
+          <input
+            placeholder="Введите email"
+            name="login"
+            type="text"
+            {...register("login")}
+          />
+          <input
+            placeholder="Введите password"
+            name="password"
+            type="password"
+            {...register("password")}
+          />
+          <input
+            placeholder="Повторите password"
+            name="repeatPassword"
+            type="password"
+            {...register("repeatPassword")}
+          />
+        </div>
+        <button className={styles.button} type="submit" disabled={!!loginError}>
+          Зарегистрироваться
+        </button>
+      </form>
+    </div>
   );
 }

@@ -29,11 +29,11 @@ export default function Form() {
 
     let newError = null;
 
-    if (!/^[\w_]*$/.test(target.value)) {
+    if (!/^[a-zA-Z][a-zA-Z0-9]{0,20}$/.test(target.value)) {
       newError =
-        "Неверный логин. Допустимые символы: буквы, цифры и нижнее подчёркивание";
-    } else if (target.value.length > 15) {
-      newError = "Неверный логин. Должно быть не больше 20 символов";
+        "Неверный логин. Первая буква должна быть латинская. Макс количество символов: 20";
+    } else {
+      setError(null);
     }
 
     setError(newError);
@@ -49,11 +49,12 @@ export default function Form() {
 
   function onPasswordBlur() {
     if (formData.password.length < 5) {
-      setError("Неверный пароль. Должно быть не меньше 3 символов");
+      setError("Неверный пароль. Должно быть не меньше 5 символов");
     }
   }
 
   function onRepeatChange({ target }) {
+    setError(null);
     setFormData({ ...formData, repeat: target.value });
   }
 
