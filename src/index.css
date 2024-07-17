@@ -1,7 +1,7 @@
 :root {
   --accent-color-hue: 236;
   --accent-color-saturation: 100%;
-  --disabled-color: #cfcfcf;
+  --disabled-color: #f5f5dc;
 }
 
 body {
@@ -12,6 +12,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #e8e8e0;
 }
 
 code {
