@@ -6,6 +6,7 @@ export default function Todos() {
   const [refreshTodos, setRefreshTodos] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [isSorted, setIsSorted] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8000/todos")
@@ -63,7 +64,15 @@ export default function Todos() {
   }, [searchInput]);
 
   function handleAlphabet() {
-    setTodos(todos.sort((a, b) => a.name.localeCompare(b.name)));
+    if (isSorted) {
+      fetch("http://localhost:8000/todos")
+        .then((result) => result.json())
+        .then((data) => setTodos(data));
+      setIsSorted(!isSorted);
+    } else {
+      setTodos([...todos].sort((a, b) => a.name.localeCompare(b.name)));
+      setIsSorted(!isSorted);
+    }
   }
 
   return (
@@ -90,7 +99,11 @@ export default function Todos() {
             </button>
           </div>
           <div className={styles.searchInput}>
-            <button onClick={handleAlphabet}>Сортировать по алфавиту</button>
+            <button onClick={handleAlphabet}>
+              {isSorted
+                ? "Вернуть начальное значение"
+                : "Сортировать по алфавиту"}
+            </button>
             <input
               type="text"
               placeholder="Найти задачу"
