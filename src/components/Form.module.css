@@ -1,9 +1,14 @@
 .form {
   width: 360px;
-  height: 200px;
+  margin-top: 20px;
   border: 1px solid black;
   border-radius: 10px;
   padding: 10px;
+}
+
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .title {
@@ -12,6 +17,10 @@
 
 .button {
   margin-top: 20px;
+}
+
+.button:focus {
+  border: 2px solid black;
 }
 
 .error {

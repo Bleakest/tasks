@@ -1,15 +1,45 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Form.module.css";
+import { validatorConfig } from "./validator-config";
+import TextField from "./TextField";
 
 export default function Form() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    repeat: "",
+    repeatPassword: "",
+  });
+  const [error, setError] = useState({
+    email: null,
+    password: null,
+    repeatPassword: null,
   });
 
   const submitButtonRef = useRef(null);
-  const [error, setError] = useState("");
+
+  const validate = (name, value) => {
+    const config = validatorConfig[name];
+    let error = null;
+
+    switch (true) {
+      case !value:
+        error = config.required;
+        break;
+
+      case config.regex && !config.regex.pattern.test(value):
+        error = config.regex.message;
+        break;
+
+      case config.custom && !config.custom.validate(value, formData.password):
+        error = config.custom.message;
+        break;
+
+      default:
+        error = null;
+    }
+
+    return error;
+  };
 
   function sendFormData(data) {
     console.log(data);
@@ -17,86 +47,75 @@ export default function Form() {
 
   function onSubmit(event) {
     event.preventDefault();
-    if (formData.password !== formData.repeat) {
-      setError("Данные о пароле не совпадают");
-    } else {
-      sendFormData(formData);
-    }
+    sendFormData(formData);
   }
 
-  function onLoginChange({ target }) {
-    setFormData({ ...formData, email: target.value });
+  function handleBlur({ target }) {
+    const { name, value } = target;
 
-    let newError = null;
-
-    if (!/^[a-zA-Z][a-zA-Z0-9]{0,20}$/.test(target.value)) {
-      newError =
-        "Неверный логин. Первая буква должна быть латинская. Макс количество символов: 20";
-    } else {
-      setError(null);
-    }
-
-    setError(newError);
+    const error = validate(name, value);
+    setError((prev) => ({ ...prev, [name]: error }));
   }
 
-  function onPasswordChange({ target }) {
-    setFormData({ ...formData, password: target.value });
-
-    let newError = null;
-
-    setError(newError);
-  }
-
-  function onPasswordBlur() {
-    if (formData.password.length < 5) {
-      setError("Неверный пароль. Должно быть не меньше 5 символов");
-    }
-  }
-
-  function onRepeatChange({ target }) {
-    setError(null);
-    setFormData({ ...formData, repeat: target.value });
-  }
-
+  let isValid = Object.values(error).every((e) => !e);
   useEffect(() => {
-    if (formData.password === formData.repeat && formData.password > 4) {
+    if (isValid) {
       submitButtonRef.current.focus();
     }
-  }, [formData]);
+  }, [isValid]);
+
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError((prev) => ({ ...prev, [name]: null }));
+  };
 
   return (
     <form onSubmit={onSubmit} className={styles["form"]}>
       <h2 className={styles["title"]}>Form</h2>
-      {error && <div className={styles["error"]}>{error}</div>}
-      <div>
-        <input
+      {error.email && <div className={styles["error"]}>{error.email}</div>}
+      {error.password && (
+        <div className={styles["error"]}>{error.password}</div>
+      )}
+      {error.repeatPassword && (
+        <div className={styles["error"]}>{error.repeatPassword}</div>
+      )}
+      <div className={styles["form-container"]}>
+        <TextField
           type="text"
-          value={formData.email}
+          name="email"
           placeholder="Введите email"
-          onChange={onLoginChange}
+          value={formData.email}
+          error={error.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <input
-          type="password"
+        <TextField
+          type="text"
+          name="password"
+          placeholder="Введите пароль"
           value={formData.password}
-          required
-          placeholder="Введите password"
-          onBlur={onPasswordBlur}
-          onChange={onPasswordChange}
+          error={error.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
         />
-        <input
-          value={formData.repeat}
-          onChange={onRepeatChange}
-          type="password"
+        <TextField
+          type="text"
+          name="repeatPassword"
           placeholder="Повторите пароль"
+          value={formData.repeatPassword}
+          error={error.repeatPassword}
+          onChange={handleChange}
+          onBlur={handleBlur}
         />
       </div>
 
       <button
         ref={submitButtonRef}
+        disabled={!isValid}
         type="submit"
         value="Зарегистрироваться"
         className={styles["button"]}
-        disabled={error !== null}
       >
         Зарегистрироваться
       </button>

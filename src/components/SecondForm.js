@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import styles from "./SecondForm.module.css";
+import styles from "./Form.module.css";
 
 const sendFormData = (formData) => {
   console.log(formData);
