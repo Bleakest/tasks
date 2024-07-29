@@ -53,10 +53,15 @@ export default function Todos() {
   }
 
   function handleSearchBtn() {
-    const searchdedItems = todos.filter((todo) => {
-      return todo.name === searchInput;
+    let newArr = [];
+
+    todos.forEach((element) => {
+      if (element.name.includes(searchInput)) {
+        newArr.push(element);
+      }
     });
-    setTodos(searchdedItems);
+
+    setTodos(newArr);
   }
 
   useEffect(() => {
