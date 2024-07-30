@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import styles from "./Todos.module.css";
+import Todo from "./Todo";
+import { AppContext } from "../context";
 
 export default function Todos() {
-  const [todos, setTodos] = useState([]);
-  const [refreshTodos, setRefreshTodos] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [isSorted, setIsSorted] = useState(false);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/todos")
-      .then((result) => result.json())
-      .then((data) => setTodos(data));
-  }, [refreshTodos]);
+  const {
+    todos,
+    setTodos,
+    inputValue,
+    setInputValue,
+    setRefreshTodos,
+    refreshTodos,
+    isSorted,
+    setIsSorted,
+    searchInput,
+    setSearchInput,
+  } = useContext(AppContext);
 
   function handleAddBtn() {
     fetch("http://localhost:8000/todos", {
@@ -26,30 +29,16 @@ export default function Todos() {
       .finally(() => setRefreshTodos(!refreshTodos));
   }
 
-  function handleDeleteBtn(target) {
-    const itemToDelete = target.closest("div");
-    console.log(itemToDelete);
-    const arrElementToDelete = todos.find(
-      (el) => el.id === Number(itemToDelete.id)
-    );
-    fetch(`http://localhost:8000/todos/${arrElementToDelete.id}`, {
-      method: "DELETE",
-    }).finally(() => setRefreshTodos(!refreshTodos));
-  }
-
-  function handleChangeBtn(target) {
-    const newValue = prompt("Введите новое значение");
-    const itemToChange = target.closest("div");
-    const arrElToChange = todos.find((todo) => {
-      return todo.id === Number(itemToChange.id);
-    });
-    fetch(`http://localhost:8000/todos/${arrElToChange.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json;charset=utf-8" },
-      body: JSON.stringify({
-        name: newValue,
-      }),
-    }).finally(() => setRefreshTodos(!refreshTodos));
+  function handleAlphabet() {
+    if (isSorted) {
+      fetch("http://localhost:8000/todos")
+        .then((result) => result.json())
+        .then((data) => setTodos(data));
+      setIsSorted(!isSorted);
+    } else {
+      setTodos([...todos].sort((a, b) => a.name.localeCompare(b.name)));
+      setIsSorted(!isSorted);
+    }
   }
 
   function handleSearchBtn() {
@@ -64,21 +53,7 @@ export default function Todos() {
     setTodos(newArr);
   }
 
-  useEffect(() => {
-    setRefreshTodos(!refreshTodos);
-  }, [searchInput]);
-
-  function handleAlphabet() {
-    if (isSorted) {
-      fetch("http://localhost:8000/todos")
-        .then((result) => result.json())
-        .then((data) => setTodos(data));
-      setIsSorted(!isSorted);
-    } else {
-      setTodos([...todos].sort((a, b) => a.name.localeCompare(b.name)));
-      setIsSorted(!isSorted);
-    }
-  }
+  console.log(todos);
 
   return (
     <div className={styles.container}>
@@ -119,23 +94,7 @@ export default function Todos() {
             <button onClick={() => handleSearchBtn()}>Подвердить</button>
           </div>
           {todos.map((todo) => {
-            return (
-              <div id={todo.id} className={styles.todo} key={todo.id}>
-                <p className={styles.todoTitle}>{todo.name}</p>
-                <button
-                  onClick={({ target }) => handleChangeBtn(target)}
-                  className={styles.changeBtn}
-                >
-                  изменить
-                </button>
-                <button
-                  onClick={({ target }) => handleDeleteBtn(target)}
-                  className={styles.deleteBtn}
-                >
-                  Удалить
-                </button>
-              </div>
-            );
+            <Todo todo={todo} />;
           })}
         </div>
       </div>
