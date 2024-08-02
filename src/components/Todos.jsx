@@ -35,7 +35,7 @@ export default function Todos() {
   function handleChangeBtn(id) {
     const newValue = prompt("Введите новое значение");
     fetch(`http://localhost:8000/todos/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify({
         name: newValue,
