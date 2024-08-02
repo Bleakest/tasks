@@ -26,24 +26,15 @@ export default function Todos() {
       .finally(() => setRefreshTodos(!refreshTodos));
   }
 
-  function handleDeleteBtn(target) {
-    const itemToDelete = target.closest("div");
-    console.log(itemToDelete);
-    const arrElementToDelete = todos.find(
-      (el) => el.id === Number(itemToDelete.id)
-    );
-    fetch(`http://localhost:8000/todos/${arrElementToDelete.id}`, {
+  function handleDeleteBtn(id) {
+    fetch(`http://localhost:8000/todos/${id}`, {
       method: "DELETE",
     }).finally(() => setRefreshTodos(!refreshTodos));
   }
 
-  function handleChangeBtn(target) {
+  function handleChangeBtn(id) {
     const newValue = prompt("Введите новое значение");
-    const itemToChange = target.closest("div");
-    const arrElToChange = todos.find((todo) => {
-      return todo.id === Number(itemToChange.id);
-    });
-    fetch(`http://localhost:8000/todos/${arrElToChange.id}`, {
+    fetch(`http://localhost:8000/todos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify({
@@ -52,28 +43,25 @@ export default function Todos() {
     }).finally(() => setRefreshTodos(!refreshTodos));
   }
 
-  function handleSearchBtn() {
-    const searchdedItems = todos.filter((todo) => {
-      return todo.name === searchInput;
-    });
-    setTodos(searchdedItems);
-  }
-
   useEffect(() => {
-    setRefreshTodos(!refreshTodos);
+    let newArr = [];
+
+    todos.forEach((element) => {
+      if (element.name.includes(searchInput)) {
+        newArr.push(element);
+      }
+    });
+
+    if (searchInput) {
+      setTodos(newArr);
+    } else {
+      setRefreshTodos(!refreshTodos);
+    }
   }, [searchInput]);
 
-  function handleAlphabet() {
-    if (isSorted) {
-      fetch("http://localhost:8000/todos")
-        .then((result) => result.json())
-        .then((data) => setTodos(data));
-      setIsSorted(!isSorted);
-    } else {
-      setTodos([...todos].sort((a, b) => a.name.localeCompare(b.name)));
-      setIsSorted(!isSorted);
-    }
-  }
+  const sorted = isSorted
+    ? [...todos].sort((a, b) => a.name.localeCompare(b.name))
+    : todos;
 
   return (
     <div className={styles.container}>
@@ -99,7 +87,7 @@ export default function Todos() {
             </button>
           </div>
           <div className={styles.searchInput}>
-            <button onClick={handleAlphabet}>
+            <button onClick={() => setIsSorted(!isSorted)}>
               {isSorted
                 ? "Вернуть начальное значение"
                 : "Сортировать по алфавиту"}
@@ -111,20 +99,19 @@ export default function Todos() {
               value={searchInput}
               onChange={({ target }) => setSearchInput(target.value)}
             />
-            <button onClick={() => handleSearchBtn()}>Подвердить</button>
           </div>
-          {todos.map((todo) => {
+          {sorted.map((todo) => {
             return (
               <div id={todo.id} className={styles.todo} key={todo.id}>
                 <p className={styles.todoTitle}>{todo.name}</p>
                 <button
-                  onClick={({ target }) => handleChangeBtn(target)}
+                  onClick={() => handleChangeBtn(todo.id)}
                   className={styles.changeBtn}
                 >
                   изменить
                 </button>
                 <button
-                  onClick={({ target }) => handleDeleteBtn(target)}
+                  onClick={() => handleDeleteBtn(todo.id)}
                   className={styles.deleteBtn}
                 >
                   Удалить
