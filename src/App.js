@@ -1,9 +1,12 @@
+import { TodosProvider } from "./contex";
 import Todos from "./components/Todos";
 
 export default function App() {
   return (
-    <div>
-      <Todos />
-    </div>
+    <TodosProvider>
+      <div>
+        <Todos />
+      </div>
+    </TodosProvider>
   );
 }
