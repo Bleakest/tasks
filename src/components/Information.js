@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Information.module.css";
-import PropTypes from "prop-types";
+import store from "../store/store";
 
 function InformationLayout({ result }) {
   return <div className={styles["container"]}>{result}</div>;
 }
 
-export default function Information({ isDraw, isGameEnded, currentPlayer }) {
+export default function Information() {
+  const { isGameEnded, currentPlayer, isDraw } = store.getState();
   const res = isDraw
     ? "ничья"
     : isGameEnded
@@ -19,9 +20,3 @@ export default function Information({ isDraw, isGameEnded, currentPlayer }) {
     </div>
   );
 }
-
-Information.propTypes = {
-  isDraw: PropTypes.bool,
-  isGameEnded: PropTypes.bool,
-  currentPlayer: PropTypes.string,
-};

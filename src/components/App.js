@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Field from "./Field";
 import Information from "./Information";
-import styles from "./App.module.css";
+import styles from "./app.module.css";
+import store from "../store/store";
 
 function AppLayout({ children }) {
   return (
@@ -12,30 +13,19 @@ function AppLayout({ children }) {
 }
 
 export default function App() {
-  const [currentPlayer, setCurrentPlayer] = useState("x");
-  const [isGameEnded, setIsGameEnded] = useState(false);
-  const [isDraw, setIsDraw] = useState(false);
-  const [field, setField] = useState(["", "", "", "", "", "", "", "", ""]);
+  const [refresh, setRefresh] = useState(Date.now());
 
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      setRefresh(Date.now());
+    });
+
+    return () => unsubscribe();
+  }, []);
   return (
     <AppLayout>
-      <Information
-        isDraw={isDraw}
-        currentPlayer={currentPlayer}
-        setCurrentPlayer={setCurrentPlayer}
-        isGameEnded={isGameEnded}
-        setIsGameEnded={setIsGameEnded}
-        field={field}
-      />
-      <Field
-        field={field}
-        setField={setField}
-        currentPlayer={currentPlayer}
-        setCurrentPlayer={setCurrentPlayer}
-        setIsGameEnded={setIsGameEnded}
-        isGameEnded={isGameEnded}
-        setIsDraw={setIsDraw}
-      />
+      <Information />
+      <Field />
     </AppLayout>
   );
 }
