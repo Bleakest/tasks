@@ -11,7 +11,7 @@ const TodoModal = () => {
     fetch(`http://localhost:8000/todos/${params.id}`)
       .then((data) => data.json())
       .then((res) => setTask(res));
-  }, [task]);
+  }, []);
 
   function handleChangeBtn() {
     const newValue = prompt("Введите новое значение");
@@ -21,7 +21,7 @@ const TodoModal = () => {
       body: JSON.stringify({
         name: newValue,
       }),
-    });
+    }).then(() => setTask((prev) => ({ ...prev, name: newValue })));
   }
 
   function handleDeleteBtn() {
