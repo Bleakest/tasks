@@ -31,10 +31,7 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/task/:id"
-              element={<TodoModal setRefreshTodos={setRefreshTodos} />}
-            />
+            <Route path="/task/:id" element={<TodoModal />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace={true} />} />
           </Routes>

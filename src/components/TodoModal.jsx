@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./Todos.module.css";
 
-const TodoModal = ({ setRefreshTodos }) => {
+const TodoModal = () => {
   const [task, setTask] = useState({});
   const params = useParams();
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const TodoModal = ({ setRefreshTodos }) => {
     fetch(`http://localhost:8000/todos/${params.id}`)
       .then((data) => data.json())
       .then((res) => setTask(res));
-  }, []);
+  }, [task]);
 
   function handleChangeBtn() {
     const newValue = prompt("Введите новое значение");
@@ -21,7 +21,7 @@ const TodoModal = ({ setRefreshTodos }) => {
       body: JSON.stringify({
         name: newValue,
       }),
-    }).finally(() => setRefreshTodos((prev) => !prev));
+    });
   }
 
   function handleDeleteBtn() {
