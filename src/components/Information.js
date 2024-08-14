@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./Information.module.css";
-import store from "../store/store";
+import { useSelector } from "react-redux";
 
 function InformationLayout({ result }) {
   return <div className={styles["container"]}>{result}</div>;
 }
 
 export default function Information() {
-  const { isGameEnded, currentPlayer, isDraw } = store.getState();
+  const { isGameEnded, currentPlayer, isDraw } = useSelector((state) => state);
   const res = isDraw
     ? "ничья"
     : isGameEnded

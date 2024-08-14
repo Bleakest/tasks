@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Field from "./Field";
 import Information from "./Information";
 import styles from "./app.module.css";
 import store from "../store/store";
+import { Provider } from "react-redux";
 
 function AppLayout({ children }) {
   return (
@@ -13,19 +14,12 @@ function AppLayout({ children }) {
 }
 
 export default function App() {
-  const [refresh, setRefresh] = useState(Date.now());
-
-  useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      setRefresh(Date.now());
-    });
-
-    return () => unsubscribe();
-  }, []);
   return (
     <AppLayout>
-      <Information />
-      <Field />
+      <Provider store={store}>
+        <Information />
+        <Field />
+      </Provider>
     </AppLayout>
   );
 }

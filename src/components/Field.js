@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styles from "./Field.module.css";
-import store from "../store/store";
 import { ACTION_TYPES } from "../store/action-types";
+import { useDispatch, useSelector } from "react-redux";
 
 const WIN_PATTERNS = [
   [0, 1, 2],
@@ -36,16 +36,15 @@ function FieldLayout({ field, handleClick, handleReset }) {
 }
 
 export default function Field() {
-  const { field, isGameEnded, currentPlayer } = store.getState();
+  const { field, isGameEnded, currentPlayer } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   function handleClick(index) {
-    console.log(store.getState());
-
     if (!isGameEnded) {
       let newArr = field.slice();
       newArr[index] = currentPlayer;
-      store.dispatch({ type: ACTION_TYPES.SET_FIELD, payload: newArr });
-      store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
+      dispatch({ type: ACTION_TYPES.SET_FIELD, payload: newArr });
+      dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
     }
   }
 
@@ -55,16 +54,16 @@ export default function Field() {
         WIN_PATTERNS[i].every((el) => field[el] === "x") ||
         WIN_PATTERNS[i].every((el) => field[el] === "y")
       ) {
-        store.dispatch({ type: ACTION_TYPES.SET_WIN });
-        store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
+        dispatch({ type: ACTION_TYPES.SET_WIN });
+        dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
       } else if (isGameEnded === false && !field.some((it) => it === "")) {
-        store.dispatch({ type: ACTION_TYPES.SET_DRAW });
+        dispatch({ type: ACTION_TYPES.SET_DRAW });
       }
     }
-  }, field);
+  }, [field]);
 
   function handleReset() {
-    store.dispatch({ type: ACTION_TYPES.RESET });
+    dispatch({ type: ACTION_TYPES.RESET });
   }
 
   return (
