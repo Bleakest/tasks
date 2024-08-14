@@ -1,12 +1,13 @@
-import { TodosProvider } from "./contex";
 import Todos from "./components/Todos";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 export default function App() {
   return (
-    <TodosProvider>
+    <Provider store={store}>
       <div>
         <Todos />
       </div>
-    </TodosProvider>
+    </Provider>
   );
 }
