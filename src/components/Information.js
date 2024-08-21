@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Information.module.css";
-import store from "../store/store";
+import { store } from "../store/store";
 
 function InformationLayout({ result }) {
   return <div className={styles["container"]}>{result}</div>;

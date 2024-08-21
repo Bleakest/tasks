@@ -1,6 +1,6 @@
-import { legacy_createStore } from "redux";
+import { legacy_createStore, compose } from "redux";
 import appReducer from "./reducer";
 
-const store = legacy_createStore(appReducer);
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export default store;
+export const store = legacy_createStore(appReducer, composeEnhancers());
