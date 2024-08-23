@@ -12,7 +12,10 @@ const appReducer = (state = initialState, action) => {
     case ACTION_TYPES.RESET:
       return { ...initialState };
     case ACTION_TYPES.SET_WIN:
-      return { ...state, isGameEnded: true };
+      return {
+        ...state,
+        isGameEnded: true,
+      };
     case ACTION_TYPES.SET_DRAW:
       return { ...state, isDraw: true };
     case ACTION_TYPES.TOGGLE_PLAYER:

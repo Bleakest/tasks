@@ -1,22 +1,38 @@
 import React from "react";
 import styles from "./Information.module.css";
-import { store } from "../store/store";
+import { connect } from "react-redux";
 
 function InformationLayout({ result }) {
-  return <div className={styles["container"]}>{result}</div>;
+  return <div className={styles["container"]}>{result.text}</div>;
 }
 
-export default function Information() {
-  const { isGameEnded, currentPlayer, isDraw } = store.getState();
-  const res = isDraw
-    ? "ничья"
-    : isGameEnded
-    ? `победил ${currentPlayer}`
-    : `ходит ${currentPlayer}`;
+class Information extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { text: "ходит х" };
+  }
 
-  return (
-    <div>
-      <InformationLayout result={res} />
-    </div>
-  );
+  static getDerivedStateFromProps(props, state) {
+    return (state.text = props.isDraw
+      ? "ничья"
+      : props.isGameEnded
+      ? `победил ${props.currentPlayer}`
+      : `ходит ${props.currentPlayer}`);
+  }
+
+  render() {
+    return (
+      <div>
+        <InformationLayout result={this.state} />
+      </div>
+    );
+  }
 }
+
+const mapStateToProps = (state) => ({
+  isDraw: state.isDraw,
+  isGameEnded: state.isGameEnded,
+  currentPlayer: state.currentPlayer,
+});
+
+export default connect(mapStateToProps)(Information);

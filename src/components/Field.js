@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./Field.module.css";
 import { ACTION_TYPES } from "../store/action-types";
 import { connect } from "react-redux";
-import App from "./App";
 import { store } from "../store/store";
 
 const WIN_PATTERNS = [
@@ -45,64 +44,29 @@ function FieldLayout({
   );
 }
 
-// export default function Field() {
-//   const { field, isGameEnded, currentPlayer } = store.getState();
-
-// function handleClick(index) {
-//   console.log(store.getState());
-
-//   if (!isGameEnded) {
-//     let newArr = field.slice();
-//     newArr[index] = currentPlayer;
-//     store.dispatch({ type: ACTION_TYPES.SET_FIELD, payload: newArr });
-//     store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
-//   }
-// }
-
-//   useEffect(() => {
-//     for (let i = 0; i < WIN_PATTERNS.length; i++) {
-//       if (
-//         WIN_PATTERNS[i].every((el) => field[el] === "x") ||
-//         WIN_PATTERNS[i].every((el) => field[el] === "y")
-//       ) {
-//         store.dispatch({ type: ACTION_TYPES.SET_WIN });
-//         store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
-//       } else if (isGameEnded === false && !field.some((it) => it === "")) {
-//         store.dispatch({ type: ACTION_TYPES.SET_DRAW });
-//       }
-//     }
-//   }, field);
-
-//   function handleReset() {
-//     store.dispatch({ type: ACTION_TYPES.RESET });
-//   }
-
-//   return (
-//     <div>
-//       <FieldLayout
-//         handleReset={handleReset}
-//         handleClick={handleClick}
-//         field={field}
-//       />
-//     </div>
-//   );
-// }
-
 class Field extends React.Component {
   constructor(props) {
-    super();
-    this.field = props.field;
-    this.isGameEnded = props.isGameEnded;
-    this.currentPlayer = props.currentPlayer;
-    this.handleReset = props.handleReset;
-    this.handleClick = props.handleClick;
-    this.state = { id: Date.now() };
+    super(props);
+
+    this.handleReset = props.handleReset.bind(this);
+    this.handleClick = props.handleClick.bind(this);
   }
 
-  componentDidMount() {
-    const unsubscribe = store.subscribe(() => {
-      this.setState({ id: Date.now() });
-    });
+  componentDidUpdate() {
+    for (let i = 0; i < WIN_PATTERNS.length; i++) {
+      if (
+        WIN_PATTERNS[i].every((el) => this.props.field[el] === "x") ||
+        WIN_PATTERNS[i].every((el) => this.props.field[el] === "y")
+      ) {
+        store.dispatch({ type: ACTION_TYPES.SET_WIN });
+        // store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
+      } else if (
+        this.props.isGameEnded === false &&
+        !this.props.field.some((it) => it === "")
+      ) {
+        store.dispatch({ type: ACTION_TYPES.SET_DRAW });
+      }
+    }
   }
 
   render() {
@@ -111,9 +75,9 @@ class Field extends React.Component {
         <FieldLayout
           handleReset={this.handleReset}
           handleClick={this.handleClick}
-          field={this.field}
-          isGameEnded={this.isGameEnded}
-          currentPlayer={this.currentPlayer}
+          field={this.props.field}
+          isGameEnded={this.props.isGameEnded}
+          currentPlayer={this.props.currentPlayer}
         />
       </div>
     );
