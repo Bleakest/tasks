@@ -1,45 +1,33 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Todos.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  changeInputAction,
-  addTodoAction,
-  initTodoAction,
-  changeIsSortedAction,
-  changeSearchAction,
-} from "../redux/actions";
+import { addTodoAction, initTodoAction } from "../redux/actions";
 import TodoItem from "./TodoItem";
 
 const TodoList = () => {
   const dispatch = useDispatch();
   const InputRef = useRef(null);
+  const [isSorted, setIsSorted] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     dispatch(initTodoAction());
   }, []);
 
-  const { isSorted, todos } = useSelector((state) => state.todoState);
-
-  function handleInputValue(text) {
-    // dispatch(changeInputAction(text));
-  }
+  const todos = useSelector((state) => state.todos);
 
   function handleAddBtn() {
     dispatch(addTodoAction(InputRef.current.value));
     InputRef.current.value = "";
   }
 
-  function handleSetIsSorted() {
-    // dispatch(changeIsSortedAction());
-  }
-
-  function handleSearchValue(text) {
-    // dispatch(changeSearchAction(text));
-  }
+  const filtred = searchInput
+    ? todos.filter((item) => item.name.includes(searchInput))
+    : todos;
 
   const sorted = isSorted
-    ? [...todos].sort((a, b) => a.name.localeCompare(b.name))
-    : todos;
+    ? [...filtred].sort((a, b) => a.name.localeCompare(b.name))
+    : filtred;
 
   return (
     <div className={styles.container}>
@@ -57,7 +45,6 @@ const TodoList = () => {
               className={styles.inputValue}
               placeholder="Создать задачу"
               ref={InputRef}
-              onChange={({ target }) => handleInputValue(target.value)}
               type="text"
             />
             <button onClick={() => handleAddBtn()} className={styles.addBtn}>
@@ -65,7 +52,7 @@ const TodoList = () => {
             </button>
           </div>
           <div className={styles.searchInput}>
-            <button onClick={() => handleSetIsSorted()}>
+            <button onClick={() => setIsSorted(!isSorted)}>
               {isSorted
                 ? "Вернуть начальное значение"
                 : "Сортировать по алфавиту"}
@@ -74,8 +61,8 @@ const TodoList = () => {
               type="text"
               placeholder="Найти задачу"
               style={{ padding: "6px", marginRight: "10px" }}
-              // value={searchInput}
-              // onChange={({ target }) => handleSearchValue(target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
           </div>
           {sorted.map((todo) => {

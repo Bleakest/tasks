@@ -11,9 +11,11 @@ const addUser = (inputValue) => {
 };
 
 export const addTodoAction = (inputValue) => async (dispatch) => {
-  await addUser(inputValue);
+  const response = await addUser(inputValue);
+  const user = await response.json();
+
   dispatch({
     type: ADD_TODO,
-    payload: inputValue,
+    payload: user,
   });
 };

@@ -1,40 +1,18 @@
 import React from "react";
 import styles from "./Todos.module.css";
 import { useDispatch } from "react-redux";
-import {
-  initTodoAction,
-  deleteTodoAction,
-  changeTodoAction,
-} from "../redux/actions";
+import { deleteTodoAction, changeTodoAction } from "../redux/actions";
 
 const TodoItem = ({ todo }) => {
   const dispatch = useDispatch();
 
-  async function handleDeleteBtn(id) {
-    await dispatch(deleteTodoAction(id));
-    dispatch(initTodoAction());
+  function handleDeleteBtn(id) {
+    dispatch(deleteTodoAction(id));
   }
   async function handleChangeBtn(id) {
     const value = prompt("Введите новое значение");
-    await dispatch(changeTodoAction(id, value));
-    dispatch(initTodoAction());
+    dispatch(changeTodoAction(id, value));
   }
-
-  // useEffect(() => {
-  //   let newArr = [];
-
-  //   todos.forEach((element) => {
-  //     if (element.name.includes(searchInput)) {
-  //       newArr.push(element);
-  //     }
-  //   });
-
-  //   if (searchInput) {
-  //     dispatch(handleSearch(newArr));
-  //   } else {
-  //     dispatch(initTodoAction());
-  //   }
-  // }, [searchInput]);
 
   return (
     <div className={styles.todo}>

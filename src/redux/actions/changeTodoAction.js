@@ -9,10 +9,12 @@ const changeUser = (id, value) => {
     }),
   });
 };
-export const changeTodoAction = (id, value) => (dispatch) => {
-  return changeUser(id, value).then(() =>
-    dispatch({
-      type: CHANGE_TODO,
-    })
-  );
+export const changeTodoAction = (id, value) => async (dispatch) => {
+  const response = await changeUser(id, value);
+  const newUser = await response.json();
+
+  dispatch({
+    type: CHANGE_TODO,
+    payload: newUser,
+  });
 };

@@ -6,10 +6,10 @@ const deleteUser = (id) => {
   });
 };
 
-export const deleteTodoAction = (id) => (dispatch) => {
-  return deleteUser(id).then(() =>
-    dispatch({
-      type: DELETE_TODO,
-    })
-  );
+export const deleteTodoAction = (id) => async (dispatch) => {
+  await deleteUser(id);
+  dispatch({
+    type: DELETE_TODO,
+    payload: id,
+  });
 };

@@ -1,15 +1,7 @@
-import {
-  ADD_TODO,
-  CHANGE_TODO,
-  DELETE_TODO,
-  HANDLE_SEARCH,
-  INIT_TODO,
-  SORT_TODOS,
-} from "../types";
+import { ADD_TODO, CHANGE_TODO, DELETE_TODO, INIT_TODO } from "../types";
 
 const initialState = {
   todos: [],
-  refreshTodos: false,
 };
 
 export const todoReducer = (state = initialState, { type, payload }) => {
@@ -20,21 +12,27 @@ export const todoReducer = (state = initialState, { type, payload }) => {
     case ADD_TODO:
       return {
         ...state,
-        todos: [...state.todos, { name: payload }],
+        todos: [...state.todos, { ...payload }],
       };
 
     case DELETE_TODO:
-      return { ...state };
-    case CHANGE_TODO:
-      return { ...state, inputValue: payload };
-
-    case SORT_TODOS:
       return {
         ...state,
-        isSorted: state.isSorted ? false : true,
+        todos: state.todos.filter((todo) => todo.id !== payload),
       };
-    case HANDLE_SEARCH:
-      return { ...state, todos: payload };
+    case CHANGE_TODO:
+      return {
+        ...state,
+        todos: [
+          ...state.todos.map((item) => {
+            if (item.id !== payload.id) {
+              return item;
+            } else {
+              return payload;
+            }
+          }),
+        ],
+      };
 
     default:
       return state;

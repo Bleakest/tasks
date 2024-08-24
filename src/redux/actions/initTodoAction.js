@@ -7,6 +7,7 @@ const getUsers = () =>
 
 export const initTodoAction = () => async (dispatch) => {
   const dataFromServer = await getUsers();
+
   dispatch({
     type: INIT_TODO,
     payload: dataFromServer,

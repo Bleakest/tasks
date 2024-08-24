@@ -1,19 +1,9 @@
-import {
-  applyMiddleware,
-  legacy_createStore,
-  compose,
-  combineReducers,
-} from "redux";
+import { applyMiddleware, legacy_createStore, compose } from "redux";
 import { thunk } from "redux-thunk";
-import { searchReducer, todoReducer } from "./reducers";
-
-const reducers = combineReducers({
-  todoState: todoReducer,
-  searchState: searchReducer,
-});
+import { todoReducer } from "./reducers/todoReducer";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = legacy_createStore(
-  reducers,
+  todoReducer,
   composeEnhancers(applyMiddleware(thunk))
 );
