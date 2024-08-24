@@ -1,11 +1,11 @@
 import React from "react";
 import styles from "./Todos.module.css";
-import Todo from "./Todo";
+import TodoList from "./TodoList";
 
-export default function Todos() {
+export default function TodoForm() {
   return (
     <div className={styles.container}>
-      <Todo />
+      <TodoList />
     </div>
   );
 }

@@ -10,10 +10,10 @@ const addUser = (inputValue) => {
   });
 };
 
-export const addTodoAction = (inputValue) => (dispatch) => {
-  return addUser(inputValue).then(() =>
-    dispatch({
-      type: ADD_TODO,
-    })
-  );
+export const addTodoAction = (inputValue) => async (dispatch) => {
+  await addUser(inputValue);
+  dispatch({
+    type: ADD_TODO,
+    payload: inputValue,
+  });
 };

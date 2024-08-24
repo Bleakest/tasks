@@ -18,7 +18,10 @@ export const todoReducer = (state = initialState, { type, payload }) => {
       return { ...state, todos: payload };
 
     case ADD_TODO:
-      return { ...state, inputValue: "" };
+      return {
+        ...state,
+        todos: [...state.todos, { name: payload }],
+      };
 
     case DELETE_TODO:
       return { ...state };

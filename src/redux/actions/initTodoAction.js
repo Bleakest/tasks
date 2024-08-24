@@ -5,11 +5,10 @@ const getUsers = () =>
     .then((response) => response.json())
     .then((users) => users);
 
-export const initTodoAction = () => (dispatch) => {
-  return getUsers().then((dataFromServer) =>
-    dispatch({
-      type: INIT_TODO,
-      payload: dataFromServer,
-    })
-  );
+export const initTodoAction = () => async (dispatch) => {
+  const dataFromServer = await getUsers();
+  dispatch({
+    type: INIT_TODO,
+    payload: dataFromServer,
+  });
 };
