@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --accent-color-hue: 236;
   --accent-color-saturation: 100%;
@@ -17,4 +21,20 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.app {
+  @apply mx-auto max-w-96 mt-20;
+}
+
+.container {
+  @apply flex flex-col border-2 border-black rounded-lg p-6 items-center;
+}
+
+.fieldContainer {
+  @apply flex flex-wrap w-[190px] mt-5;
+}
+
+.field {
+  @apply border border-black rounded-xl w-[60px] h-[60px] flex items-center justify-center;
 }

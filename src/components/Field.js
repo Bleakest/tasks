@@ -1,19 +1,8 @@
 import React from "react";
-import styles from "./Field.module.css";
 import { ACTION_TYPES } from "../store/action-types";
 import { connect } from "react-redux";
-import { store } from "../store/store";
-
-const WIN_PATTERNS = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8], // Варианты побед по горизонтали
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8], // Варианты побед по вертикали
-  [0, 4, 8],
-  [2, 4, 6], // Варианты побед по диагонали
-];
+import CheckForWin from "../utils/CheckForWin";
+import CheckForDraw from "../utils/CheckForDraw";
 
 function FieldLayout({
   field,
@@ -23,21 +12,24 @@ function FieldLayout({
   currentPlayer,
 }) {
   return (
-    <div className={styles["fieldContainer"]}>
+    <div className="fieldContainer">
       {field.map((item, index) => {
         return (
           <div
             onClick={() =>
               handleClick(index, isGameEnded, field, currentPlayer)
             }
-            className={styles["field"]}
+            className="field"
             key={index}
           >
             <div>{item}</div>
           </div>
         );
       })}
-      <button onClick={() => handleReset()} style={{ marginTop: "10px" }}>
+      <button
+        onClick={() => handleReset()}
+        className="border-[1px] rounded-lg border-black p-2 mt-2"
+      >
         Начать заново
       </button>
     </div>
@@ -52,26 +44,9 @@ class Field extends React.Component {
     this.handleClick = props.handleClick.bind(this);
   }
 
-  componentDidUpdate() {
-    for (let i = 0; i < WIN_PATTERNS.length; i++) {
-      if (
-        WIN_PATTERNS[i].every((el) => this.props.field[el] === "x") ||
-        WIN_PATTERNS[i].every((el) => this.props.field[el] === "y")
-      ) {
-        store.dispatch({ type: ACTION_TYPES.SET_WIN });
-        // store.dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
-      } else if (
-        this.props.isGameEnded === false &&
-        !this.props.field.some((it) => it === "")
-      ) {
-        store.dispatch({ type: ACTION_TYPES.SET_DRAW });
-      }
-    }
-  }
-
   render() {
     return (
-      <div>
+      <>
         <FieldLayout
           handleReset={this.handleReset}
           handleClick={this.handleClick}
@@ -79,7 +54,7 @@ class Field extends React.Component {
           isGameEnded={this.props.isGameEnded}
           currentPlayer={this.props.currentPlayer}
         />
-      </div>
+      </>
     );
   }
 }
@@ -93,6 +68,10 @@ const mapDispatchToProps = (dispatch) => ({
       let newArr = field.slice();
       newArr[index] = currentPlayer;
       dispatch({ type: ACTION_TYPES.SET_FIELD, payload: newArr });
+
+      CheckForWin();
+      CheckForDraw();
+
       dispatch({ type: ACTION_TYPES.TOGGLE_PLAYER });
     }
   },
